@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pearl_smart_crate/utils/constants.dart';
+import 'package:pearl_smart_crate/utils/rpi_connector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<Map<String, bool>> loadWeekdayPreferences() async {
@@ -34,6 +35,9 @@ setWeekdayPreferences(String day, bool value) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
 
   await prefs.setBool(day, value);
+
+  encodeJsonPushWeekday(day, value);
+
   print('weekdays set');
 }
 
