@@ -60,12 +60,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Map<String, bool> isChecked = {};
   TimeOfDay time = const TimeOfDay(hour: 7, minute: 15);
 
-  @override
-  void initState() {
-    super.initState();
-    loadWeekdayPreferences();
-    loadTimePreferences();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   loadWeekdayPreferences();
+  //   loadTimePreferences();
+  // }
 
 // loads the weekdays and times on program start that are saved in shared pref
   void initLoadPreferences() async {
@@ -94,53 +94,70 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: ListView(
-                children: daysOfWeek.map((day) {
-                  return CheckboxListTile(
-                    title: Text(day),
-                    value: isChecked[day] ?? false,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        isChecked[day] = value!;
-                        setWeekdayPreferences(day, value);
-                      });
-                    },
-                  );
-                }).toList(),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                print('TimePicker clicked');
-                final TimeOfDay? newTime = await showTimePicker(
-                    context: context,
-                    initialTime: time,
-                    initialEntryMode: TimePickerEntryMode.inputOnly);
-                if (newTime != null) {
-                  await setTimePreferences(newTime);
+    return FutureBuilder<Map<String, bool>>(
+      future: loadWeekdayPreferences(),
+      builder:
+          (BuildContext context, AsyncSnapshot<Map<String, bool>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (!snapshot.hasData) {
+          return const Text('isChecked has no data');
+        } else {
+          isChecked = snapshot.data!;
+        }
 
-                  setState(() {
-                    time = newTime;
-                  });
-                } else {
-                  throw Exception('newTime is null');
-                }
-              },
-              child: const Text('Select time'),
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+          ),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: ListView(
+                    children: daysOfWeek.map((day) {
+                      return CheckboxListTile(
+                        title: Text(day),
+                        value: isChecked[day] ?? false,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isChecked[day] = value!;
+                            setWeekdayPreferences(day, value);
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    print('TimePicker clicked');
+                    loadTimePreferences();
+                    final TimeOfDay? newTime = await showTimePicker(
+                        context: context,
+                        initialTime: time,
+                        initialEntryMode: TimePickerEntryMode.inputOnly);
+                    if (newTime != null) {
+                      await setTimePreferences(newTime);
+
+                      setState(() {
+                        time = newTime;
+                      });
+                    } else {
+                      throw Exception('newTime is null');
+                    }
+                  },
+                  child: const Text('Select time'),
+                ),
+                Text('Selected time: ${time.format(context)}'),
+              ],
             ),
-            Text('Selected time: ${time.format(context)}'),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

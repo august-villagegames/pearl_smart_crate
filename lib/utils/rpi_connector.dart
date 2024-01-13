@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart';
 
-String serverUrl = 'http://localhost:8080';
+String serverUrl = 'localhost:8080';
 
 // create function that sends JSON to ip
 Future<StreamedResponse> sendRequest(Request request) async {
@@ -20,7 +20,7 @@ Future<StreamedResponse> sendRequest(Request request) async {
 
 // create JSCON encoder
 void encodeJsonPushWeekday(String day, bool value) async {
-  Request request = Request('POST', Uri.parse('$serverUrl/addWeekday'));
+  Request request = Request('POST', Uri.http(serverUrl, '/addWeekday'));
   print('request sent');
   request.headers['Content-Type'] = 'application/json';
 
