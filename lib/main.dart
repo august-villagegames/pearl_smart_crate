@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pearl_smart_crate/classes/is_checked.dart';
 import 'package:pearl_smart_crate/utils/constants.dart';
 import 'package:pearl_smart_crate/utils/shared_pref.dart';
 
@@ -69,20 +70,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
 // loads the weekdays and times on program start that are saved in shared pref
   void initLoadPreferences() async {
-    isChecked = await loadWeekdayPreferences();
-    time = await loadTimePreferences();
-    setState(() {});
+    final DaysAndTimes allDaysAndTime = await loadAllPreferences();
+    // isChecked =
+    //     allDaysAndTime.day ?? {for (var item in daysOfWeek) item: false};
+    // time = allDaysAndTime.time!;
+    setState(() {
+      isChecked =
+          allDaysAndTime.day ?? {for (var item in daysOfWeek) item: false};
+      time = allDaysAndTime.time!;
+    });
   }
 
   void selectTime() async {
-    print('TimePicker clicked');
     final TimeOfDay? newTime = await showTimePicker(
       context: context,
       initialTime: time,
     );
 
     if (newTime != null) {
-      await setTimePreferences(newTime);
+      await setAllPreferences(isChecked, newTime);
 
       setState(() {
         time = newTime;
@@ -94,18 +100,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Map<String, bool>>(
-      future: loadWeekdayPreferences(),
-      builder:
-          (BuildContext context, AsyncSnapshot<Map<String, bool>> snapshot) {
+    return FutureBuilder<DaysAndTimes>(
+      future: loadAllPreferences(),
+      builder: (BuildContext context, AsyncSnapshot<DaysAndTimes> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData) {
-          return const Text('isChecked has no data');
+          return const Text('sharedpref has no data');
         } else {
-          isChecked = snapshot.data!;
+          isChecked =
+              snapshot.data?.day ?? {for (var item in daysOfWeek) item: false};
+          time = snapshot.data?.time ?? const TimeOfDay(hour: 7, minute: 15);
         }
 
         return Scaffold(
@@ -125,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         onChanged: (bool? value) {
                           setState(() {
                             isChecked[day] = value!;
-                            setWeekdayPreferences(day, value);
+                            setAllPreferences(isChecked, time);
                           });
                         },
                       );
@@ -134,14 +141,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    print('TimePicker clicked');
-                    loadTimePreferences();
+                    loadAllPreferences();
                     final TimeOfDay? newTime = await showTimePicker(
                         context: context,
                         initialTime: time,
                         initialEntryMode: TimePickerEntryMode.inputOnly);
                     if (newTime != null) {
-                      await setTimePreferences(newTime);
+                      await setAllPreferences(isChecked, newTime);
 
                       setState(() {
                         time = newTime;
