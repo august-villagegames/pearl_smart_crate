@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // create load for all values
 Future<DaysAndTimes> loadAllPreferences() async {
-  Map<String, bool> _weekdaysNew = {for (var item in daysOfWeek) item: false};
+  Map<String, bool> weekdaysNew = {for (var item in daysOfWeek) item: false};
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -16,10 +16,10 @@ Future<DaysAndTimes> loadAllPreferences() async {
 
   //get weekdays
   for (var day in daysOfWeek) {
-    _weekdaysNew[day] = (prefs.getBool(day) ?? false);
+    weekdaysNew[day] = (prefs.getBool(day) ?? false);
   }
 
-  final weekdays = _weekdaysNew;
+  final weekdays = weekdaysNew;
 
   if (hour != null && minute != null) {
     // sends this to RPI connector
