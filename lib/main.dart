@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pearl_smart_crate/classes/is_checked.dart';
 import 'package:pearl_smart_crate/utils/constants.dart';
+import 'package:pearl_smart_crate/utils/rpi_connector.dart';
 import 'package:pearl_smart_crate/utils/shared_pref.dart';
 
 void main() {
@@ -159,6 +160,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: const Text('Select time'),
                 ),
                 Text('Selected time: ${time.format(context)}'),
+                const SizedBox(
+                  height: 50,
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    openCrateRequest();
+                  },
+                  child: const Text('Open Crate'),
+                ),
+                const SizedBox(
+                  height: 50,
+                ),
               ],
             ),
           ),

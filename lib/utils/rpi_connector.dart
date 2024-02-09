@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
-String serverUrl = 'localhost:8080';
+String serverUrl = '10.0.0.69';
 
 // create function that sends JSON to ip
 Future<StreamedResponse> sendRequest(Request request) async {
@@ -21,7 +21,7 @@ Future<StreamedResponse> sendRequest(Request request) async {
 
 //TODO: try this with ios or simulator instead of chrome
 void encodeJsonPushAll(Map<String, bool> weekdays, TimeOfDay time) async {
-  Request request = Request('POST', Uri.http(serverUrl)); 
+  Request request = Request('POST', Uri.http(serverUrl));
   request.headers['Content-Type'] = 'application/json';
   request.body = json.encode([
     weekdays,
@@ -33,9 +33,10 @@ void encodeJsonPushAll(Map<String, bool> weekdays, TimeOfDay time) async {
   print('encoding: ${request.encoding}');
   print('method: ${request.method}');
   sendRequest(request);
-  try {
-    jsonDecode(request.body);
-  } catch (e) {
-    print('The provided string is not valid JSON: ${request.body}');
-  }
+}
+
+void openCrateRequest() async {
+  Request request = Request('POST', Uri.http('$serverUrl/open'));
+  request.headers['Content-Type'] = 'application/json';
+  sendRequest(request);
 }
