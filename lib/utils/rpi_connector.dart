@@ -2,8 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
-String serverUrl =
-    '10.0.0.69'; //find out how to get to specific process/folder running on the ngrok tunnel
+String serverUrl = 'pearlsmartcrate.duckdns.org';
 
 // create function that sends JSON to ip
 Future<StreamedResponse> sendRequest(Request request) async {
