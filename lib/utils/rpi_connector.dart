@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
-String serverUrl = '192.168.1.60:8080';
+String serverUrl = '10.0.0.56';
 
 // create function that sends JSON to ip
 Future<StreamedResponse> sendRequest(Request request) async {
@@ -36,7 +36,7 @@ void encodeJsonPushAll(Map<String, bool> weekdays, TimeOfDay time) async {
 }
 
 void openCrateRequest() async {
-  Request request = Request('POST', Uri.http('$serverUrl', '/open'));
+  Request request = Request('POST', Uri.http(serverUrl, '/open'));
   request.headers['Content-Type'] = 'application/json';
   sendRequest(request);
 }
