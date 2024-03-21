@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
-String serverUrl = '10.0.0.56';
+String serverUrl = '10.0.0.56:8080';
 
 // create function that sends JSON to ip
 Future<StreamedResponse> sendRequest(Request request) async {
